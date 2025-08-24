@@ -1,0 +1,26 @@
+name: "Staging · on gh-pages push"
+
+on:
+  push:
+    branches: [ "gh-pages" ]
+
+jobs:
+  ci_rapido:
+    name: "CI rápido (staging)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: "[TEST-STAGING] Sanidade staging"
+        run: |
+          echo "[TEST-STAGING] Verificando existência de staging/index.html"
+          test -f staging/index.html
+
+  deploy_staging:
+    name: "Deploy para /staging (gh-pages)"
+    runs-on: ubuntu-latest
+    needs: ci_rapido
+    steps:
+      - name: "No-op: GitHub Pages publicará automaticamente a partir do branch gh-pages"
+        run: |
+          echo "Nada a fazer aqui — o Pages executará o job 'pages build and deployment' após o push."
