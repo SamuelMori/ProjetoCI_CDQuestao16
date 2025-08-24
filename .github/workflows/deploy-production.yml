@@ -1,0 +1,31 @@
+name: "Production · Promote Staging on PR Merge"
+
+on:
+  pull_request:
+    types: [ "closed" ]
+    branches: [ "main" ]
+
+jobs:
+  promote:
+    if: github.event.pull_request.merged == true
+    name: "Promover staging → produção"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Copiar staging/index.html → index.html
+        run: |
+          cp -f staging/index.html index.html
+          # Garante publicação estática correta
+          touch .nojekyll
+
+      - name: Commit enviado ao gh-pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .nojekyll
+          git commit -m "chore(prod): promote staging to production (auto)"
+          git push origin gh-pages
